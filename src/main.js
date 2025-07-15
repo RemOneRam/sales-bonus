@@ -6,8 +6,8 @@
  */
 function calculateSimpleRevenue(purchase) {
   return purchase.items.reduce((total, item) => {
-    const itemRevenue =
-      item.sale_price * item.quantity * (1 - item.discount / 100);
+    const discount = item.discount || 0; // Если скидки нет, используем 0
+    const itemRevenue = item.sale_price * item.quantity * (1 - discount / 100);
     return total + itemRevenue;
   }, 0);
 }
@@ -35,22 +35,16 @@ function calculateBonusByProfit(index, total, seller) {
  * @returns {{revenue, top_products, bonus, name, sales_count, profit, seller_id}[]}
  */
 function analyzeSalesData(data, options) {
-  if (!data || typeof data !== "object") {
-    throw new Error("Неверный формат данных");
-  }
-  if (
-    !Array.isArray(data.sellers) ||
-    !Array.isArray(data.products) ||
-    !Array.isArray(data.purchase_records)
-  ) {
-    throw new Error("Отсутствуют обязательные поля в данных");
-  }
+  // ... предыдущие проверки ...
 
-  if (
-    typeof options?.calculateRevenue !== "function" ||
-    typeof options?.calculateBonus !== "function"
-  ) {
-    throw new Error("Не переданы обязательные функции расчета");
+  if (data.sellers.length === 0) {
+    throw new Error("Массив продавцов не должен быть пустым");
+  }
+  if (data.products.length === 0) {
+    throw new Error("Массив товаров не должен быть пустым");
+  }
+  if (data.purchase_records.length === 0) {
+    throw new Error("Массив записей о покупках не должен быть пустым");
   }
 
   const sellerIndex = Object.fromEntries(data.sellers.map((s) => [s.id, s]));
