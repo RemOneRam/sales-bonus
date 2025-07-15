@@ -5,8 +5,12 @@
  * @returns {number}
  */
 function calculateSimpleRevenue(purchase) {
+  if (!purchase || !Array.isArray(purchase.items)) {
+    throw new Error("Некорректные данные покупки");
+  }
+  
   return purchase.items.reduce((total, item) => {
-    const discount = item.discount || 0; // Если скидки нет, используем 0
+    const discount = item.discount || 0; 
     const itemRevenue = item.sale_price * item.quantity * (1 - discount / 100);
     return total + itemRevenue;
   }, 0);
