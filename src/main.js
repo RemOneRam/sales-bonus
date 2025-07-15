@@ -4,16 +4,24 @@
  * @param _product карточка товара
  * @returns {number}
  */
-function calculateSimpleRevenue(purchase) {
-  if (!purchase || !Array.isArray(purchase.items)) {
-    throw new Error("Некорректные данные покупки");
+function calculateSimpleRevenue(purchase, _product) {
+  if (!purchase) return 0;
+
+  if (Array.isArray(purchase.items)) {
+    return purchase.items.reduce((total, item) => {
+      const price = item.sale_price || 0;
+      const quantity = item.quantity || 0;
+      const discount = item.discount || 0;
+      const itemRevenue = price * quantity * (1 - discount / 100);
+      return total + itemRevenue;
+    }, 0);
   }
-  
-  return purchase.items.reduce((total, item) => {
-    const discount = item.discount || 0; 
-    const itemRevenue = item.sale_price * item.quantity * (1 - discount / 100);
-    return total + itemRevenue;
-  }, 0);
+
+  const price = purchase.sale_price || 0;
+  const quantity = purchase.quantity || 0;
+  const discount = purchase.discount || 0;
+  const revenue = price * quantity * (1 - discount / 100);
+  return Math.round(revenue * 100) / 100;
 }
 
 /**
